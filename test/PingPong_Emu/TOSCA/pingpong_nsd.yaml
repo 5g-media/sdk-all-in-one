@@ -1,0 +1,85 @@
+toscaDefinitionsVersion: tosca_sol001_v0_10
+description: Ping-pong example nentwork scenario with two VNFs
+
+metadata:
+  descriptorId: 622bc54d-3e4c-4304-b1a2-3704666f835a
+  vendor: OSM
+  version: "1.1"
+
+topologyTemplate:
+  
+  substitutionMappings:
+    nodeType: tosca.nodes.nfv.NS
+    requirements:
+      virtualLink: [{cp: ping_VNF, vl: default},{cp: pong_VNF, vl: default}]
+  
+  nodeTemplates:
+    
+    NS:
+      type: tosca.nodes.nfv.NS
+      properties:
+        descriptorId: 622bc54d-3e4c-4304-b1a2-3704666f835a
+        designer: OSM
+        version: "1.1"
+        name: pingpong_nsd
+        invariantId: 622bc54d-3e4c-4304-b1a2-3704666f835a
+      requirements:
+        virtualLink: [default]
+
+    default:
+      type: tosca.nodes.nfv.NsVirtualLink
+      properties:
+        description: Mgmt VL
+        testAccess: [NONE]
+        vlProfile:
+          maxBitrateRequirements:
+            root: 1000000
+            leaf: 100000
+          minBitrateRequirements:
+            root: 100000
+            leaf: 10000
+        connectivityType:
+          layerProtocols: [IPV4]
+          flowPattern: LINE
+        
+    ping_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: d2d4a5f8-3a2a-496d-89c3-b42459f440e4
+        descriptorVersion: "1.1"
+        provider: OSM
+        productName: ping
+        softwareVersion: v1.0
+        productInfoName: ping
+        productInfoDescription: ping
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+          virtualLink:
+          - default
+          
+    pong_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: e67faebc-52c0-4bf6-8f4a-e5049855eae1
+        descriptorVersion: "1.1"
+        provider: OSM
+        productName: pong
+        softwareVersion: v1.0
+        productInfoName: pong
+        productInfoDescription: pong
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+          virtualLink:
+          - default

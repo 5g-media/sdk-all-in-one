@@ -1,0 +1,26 @@
+#!/bin/bash
+#Image for ping-pong (emulator)
+docker pull ubuntu
+
+#Images for ping-pong (lean-ow)
+docker pull docker5gmedia/action-pong
+docker pull docker5gmedia/action-ping
+
+#Image for Use case 1
+docker pull docker5gmedia/transcoder_2_7_2
+
+#Images for Use case 3
+docker pull -a fmoscatelli/vcdn_components
+docker tag fmoscatelli/vcdn_components:vcache_uc3_5gmedia docker5gmedia/vcache
+docker rmi fmoscatelli/vcdn_components:vcache_uc3_5gmedia
+docker tag fmoscatelli/vcdn_components:originserver_uc3_5gmedia docker5gmedia/originserver
+docker rmi fmoscatelli/vcdn_components:originserver_uc3_5gmedia
+
+#Images for profiler
+docker pull docker5gmedia/vcache-profiling
+docker pull docker5gmedia/vspeech-profiling
+docker pull docker5gmedia/vtranscoder-test
+
+#Images for Use case 2
+docker pull docker5gmedia/rtmp-server
+git clone https://production.eng.it/gitlab/5G-MEDIA/vspeech.git ~/vspeech && cd ~/vspeech && docker build -t docker5gmedia/vspeech . && sudo rm -r ~/vspeech 

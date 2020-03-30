@@ -1,0 +1,85 @@
+toscaDefinitionsVersion: tosca_sol001_v0_10
+description: FaaS ping-pong example nentwork scenario with two VNFs
+
+metadata:
+  descriptorId: 85ee1962-f65b-4965-a73f-96b5e1d9d068
+  vendor: IBM
+  version: "1.1"
+
+topologyTemplate:
+  
+  substitutionMappings:
+    nodeType: tosca.nodes.nfv.NS
+    requirements:
+      virtualLink: [{cp: ping_VNF, vl: default},{cp: pong_VNF, vl: default}]
+  
+  nodeTemplates:
+    
+    NS:
+      type: tosca.nodes.nfv.NS
+      properties:
+        descriptorId: 85ee1962-f65b-4965-a73f-96b5e1d9d068
+        designer: IBM
+        version: "1.1"
+        name: faas_pingpong_nsd
+        invariantId: 85ee1962-f65b-4965-a73f-96b5e1d9d068
+      requirements:
+        virtualLink: [default]
+
+    default:
+      type: tosca.nodes.nfv.NsVirtualLink
+      properties:
+        description: Mgmt VL
+        testAccess: [NONE]
+        vlProfile:
+          maxBitrateRequirements:
+            root: 1000000
+            leaf: 100000
+          minBitrateRequirements:
+            root: 100000
+            leaf: 10000
+        connectivityType:
+          layerProtocols: [IPV4]
+          flowPattern: LINE
+        
+    ping_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: 7d8b84df-c536-443f-b73e-2f1aeb848fd6
+        descriptorVersion: "1.1"
+        provider: IBM
+        productName: faas_ping
+        softwareVersion: v1.0
+        productInfoName: faas_ping
+        productInfoDescription: faas_ping
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+          virtualLink:
+          - default
+          
+    pong_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: 258cc030-a79c-463f-b78d-a37b215c5bf1
+        descriptorVersion: "1.1"
+        provider: IBM
+        productName: faas_pong
+        softwareVersion: v1.0
+        productInfoName: faas_pong
+        productInfoDescription: faas_pong
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+          virtualLink:
+          - default

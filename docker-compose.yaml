@@ -1,0 +1,14 @@
+version: '3'
+services:
+  sdk-aio:
+    container_name: sdk-aio
+    restart: always
+    build: ./
+    ports:
+      - '8401:8401'
+  validation:
+    container_name: validation-extract-service
+    restart: always
+    image: docker5gmedia/validation-extract-service
+    ports:
+      - '8434:8434'

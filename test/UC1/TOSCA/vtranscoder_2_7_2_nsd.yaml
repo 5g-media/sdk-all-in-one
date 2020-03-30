@@ -1,0 +1,67 @@
+toscaDefinitionsVersion: tosca_sol001_v0_10
+description: vTranscoder network scenario with one VNF
+
+metadata:
+  descriptorId: 95a6c14e-a1ad-4893-8865-3442404a8d83
+  vendor: IBM
+  version: "1.1"
+
+topologyTemplate:
+  
+  substitutionMappings:
+    nodeType: tosca.nodes.nfv.NS
+    requirements:
+      virtualLink: [{cp: vtranscoder_VNF, vl: default}]
+  
+  nodeTemplates:
+    
+    NS:
+      type: tosca.nodes.nfv.NS
+      properties:
+        descriptorId: 95a6c14e-a1ad-4893-8865-3442404a8d83
+        designer: IBM
+        version: "1.1"
+        name: vtranscoder_2_7_2_nsd
+        invariantId: 95a6c14e-a1ad-4893-8865-3442404a8d83
+      requirements:
+        virtualLink: [default]
+
+    default:
+      type: tosca.nodes.nfv.NsVirtualLink
+      properties:
+        description: Mgmt VL
+        testAccess: [NONE]
+        vlProfile:
+          maxBitrateRequirements:
+            root: 1000000
+            leaf: 100000
+          minBitrateRequirements:
+            root: 100000
+            leaf: 10000
+        connectivityType:
+          layerProtocols: [IPV4]
+          flowPattern: LINE
+        
+    vtranscoder_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: ad83d32e-f4b8-4f9d-b7a3-8f91a092f84a
+        descriptorVersion: "1.1"
+        provider: IBM
+        productName: vtranscoder_2_7_2
+        softwareVersion: v1.0
+        productInfoName: vtranscoder_2_7_2
+        productInfoDescription: vtranscoder_2_7_2
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        configurableProperties:
+          isAutoscaleEnabled: "false"
+          isAutohealEnabled: "false"
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+          virtualLink:
+          - default

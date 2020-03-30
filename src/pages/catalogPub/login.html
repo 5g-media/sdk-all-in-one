@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5GMedia</title>
+    <link rel="stylesheet" href="assetslogin/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assetslogin/css/Login-Form-Clean.css">
+    <link rel="stylesheet" href="assetslogin/css/styles.css">
+    
+</head>
+
+<body>
+
+    <div>
+        <div class="container" id="mainDiv" >
+            <div class="row">
+
+                <div class="col-md-3" style="height:700px">
+                    <button class="btn btn-primary" type="button" style="margin-top:50px;width:150px;height:150px;margin-right:50px;margin-left:10px;background-image:url(&quot;assets/img/logo.jpg&quot;); background-size: 100%;"></button>
+                    <button class="btn btn-primary" onclick="myCatalogue(0)" type="button" style="margin-top:10px;width:150px;height:70px;margin-right:50px;margin-left:10px;background-color:rgb(0, 38, 255);">NSD Catalogue</button>
+                    <button class="btn btn-primary" onclick="myVNFCatalogue(0)" type="button" style="margin-right:10px;margin-left:10px;width:150px;margin-top:10px;height:70px;background-color:rgb(255,0,138);">VNFD Catalogue</button>
+                </div>
+                <div class="col-md-3" style="height:700px">
+                    <h5 id="CatalogueIDs" style="margin-top:50px;margin-left:0px;margin-bottom:40px;width:120px;"></h5>
+                    <button id="addnew" class="btn btn-primary" onclick="hidejsonobjectarea()" type="button" style="display:none;margin-left:0px;width:120px;margin-top:100px;height:50px;background-color:rgb(204,0,255);">ADD</button>
+                    <button id="addnsd" class="btn btn-primary" onclick="postFunction()" type="button" style="display:none;margin-left:0px;width:120px;margin-top:10px;height:50px;background-color:rgb(0, 38, 255);">ADD NSD</button>
+                    <button id="addvnfd" class="btn btn-primary" onclick="postVNFunction()" type="button" style="display:none;margin-left:0px;width:120px;margin-top:10px;height:50px;background-color:rgb(255,0,138);">ADD VNFD</button>
+
+                </div>
+                <div class="col-md-6" style="height:700px">
+                    <pre id="jsonobject" style="margin-top:50px;margin-left:0px;height:680px;width:400px;"></pre>
+                    <textarea id="jsontext" style="display:none; margin-top:50px;margin-left:0px;height:680px;width:400px;"></textarea>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js">
+        $(document).ready(function () {
+            $(function () {
+                $('#btn btn-primary').click(function (e) {
+                    e.preventDefault();
+                }).click();
+            });
+
+        });
+    </script>
+
+
+
+
+    <script>
+
+        var IPaddress1 = "http://10.254.143.148"
+        var PORTnumber1 = "8080"
+
+        var nsdCheck = 0;
+
+        function getFunction() {
+            showjsonobjectarea()
+            var tokenlog = localStorage.getItem("giventoken");
+            
+            var x = document.getElementById("jsonobject");
+            document.getElementById("jsonobject").value = "";
+            x.innerHTML = "JSON object is written";
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", IPaddress1 + ":" + PORTnumber1 + "/ns_descriptors/", true);
+            xmlhttp.setRequestHeader("auth", tokenlog);
+            
+            xmlhttp.onreadystatechange = function () {
+                
+                if (xmlhttp.readyState == 4 && this.status == 200) {
+                    var myArr = JSON.parse(this.responseText);
+                    jsonPrettyHighlightToId(myArr, "jsonobject");
+                }
+            };
+            xmlhttp.send();
+        }
+
+        function vnfGetFunction() {
+            showjsonobjectarea()
+            var x = document.getElementById("jsonobject");
+            var tokenlog = localStorage.getItem("giventoken");
+            document.getElementById("jsonobject").value = "";
+            x.innerHTML = "JSON object is written";
+            var xmlhttp = new XMLHttpRequest();
+            xmlhttp.open("GET", IPaddress1 + ":" + PORTnumber1 + "/vnf_descriptors/", true);
+            xmlhttp.setRequestHeader("auth", tokenlog);
+            xmlhttp.onreadystatechange = function () {
+                if (xmlhttp.readyState == 4 && this.status == 200) {
+                    var myArr = JSON.parse(this.responseText);
+                    jsonPrettyHighlightToId(myArr, "jsonobject");
+                }
+            };
+            xmlhttp.send();
+        }
+        // NSD POST and PUT Functions
+        function postFunction() {
+            document.getElementById('addnew').style.display = "none";
+            var tokenlog = localStorage.getItem("giventoken");
+            var xhr = new XMLHttpRequest();
+            var url = IPaddress1 + ":" + PORTnumber1 + "/ns_descriptors/";
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("auth", tokenlog);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status === 200) {
+                    var docX = xhr.responseText;
+                    var resultPost = JSON.parse(xhr.responseText);
+                    var resText = String(resultPost);
+                    var Res = JSON.parse(resultPost);
+                    var ResY = Res["nsd:nsd-catalog"];
+                    var ResN = ResY["nsd"]
+                    var objIdGiven = String(ResN.id).replace(/[{()}]/g, '');
+                    var objNameGiven = String(ResN.name).replace(/[{()}]/g, '');
+                    var newurl = IPaddress1 + ":" + PORTnumber1 + "/ns_descriptors/" + objIdGiven + "/nsd_content";
+                    uploadnsd(newurl, objIdGiven, objNameGiven);
+                } 
+            };
+
+            var xdoc = document.getElementById("jsontext").value;
+
+            xhr.send(xdoc);
+
+
+
+        }
+
+        function HandlePopupResult(result) {
+            alert("result of popup is: " + result);
+        }
+
+        function uploadnsd(newurl, objIdGiven, objNameGiven) {
+            var xhre = new XMLHttpRequest();
+            xhre.open("PUT", newurl, true);
+            var tokenlog = localStorage.getItem("giventoken");
+            xhre.setRequestHeader("Content-Type", "application/json");
+            xhre.setRequestHeader("auth", tokenlog)
+            xhre.onreadystatechange = function () {
+                if (xhre.readyState == 4 && xhre.status === 200) {
+                    var docXe = xhre.responseText;
+                  //  alert("Post is successful");
+                } else {
+                    //alert("Post is unsuccessful");
+
+                }
+
+
+            };
+
+            var newdoc = document.getElementById("jsontext").value;
+            //var jsoninp = JSON.stringify(xdoc);
+            //console.log(jsoninp);
+            xhre.send(newdoc);
+            myCatalogue(objNameGiven);
+			//document.getElementById("jsontext").value = "";
+        }
+
+
+        // VNFD POST and PUT FUNCTIONS
+
+        function postVNFunction() {
+            document.getElementById('addnew').style.display = "none";
+            //document.getElementById("jsonobject").innerHTML = "POSTED";
+            var xhr = new XMLHttpRequest();
+            var url = IPaddress1 + ":" + PORTnumber1 + "/vnf_descriptors/";
+            var tokenlog = localStorage.getItem("giventoken");
+			
+            xhr.open("POST", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("auth", tokenlog);
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status === 200) {
+                    var docX = xhr.responseText;
+                    var resultPost = JSON.parse(xhr.responseText);
+                    var resText = String(resultPost);
+                    var Res = JSON.parse(resultPost);
+                    var ResY = Res["vnfd:vnfd-catalog"];
+                    var ResN = ResY["vnfd"]
+                    var objIdGiven = String(ResN.id).replace(/[{()}]/g, '');
+                    var objNameGiven = String(ResN.name).replace(/[{()}]/g, '');
+                    var newurl = IPaddress1 + ":" + PORTnumber1 + "/vnf_descriptors/" + objIdGiven + "/vnfd_content";
+                    uploadvnfd(newurl, objIdGiven, objNameGiven);
+                    //alert("Post is successful");
+
+                } else {
+                    //var resultPost2 = "An error occured - not posted to the catalog";
+                    //document.getElementById("jsonobject").innerHTML = resultPost2;
+                }
+            };
+
+            var xdoc = document.getElementById("jsontext").value;
+            //var jsoninp = JSON.stringify(xdoc);
+            //console.log(jsoninp);
+            xhr.send(xdoc);
+			//document.getElementById("jsontext").value = "";
+        }
+
+        function uploadvnfd(newurl, objIdGiven, objNameGiven) {
+            var xhre = new XMLHttpRequest();
+            xhre.open("PUT", newurl, true);
+            var tokenlog = localStorage.getItem("giventoken");
+            xhre.setRequestHeader("auth", tokenlog);
+            xhre.setRequestHeader("Content-Type", "application/json");
+            xhre.onreadystatechange = function () {
+                if (xhre.readyState == 4 && xhre.status === 200) {
+                    var docXe = xhre.responseText;
+                   // alert("Post is successful");
+                } else {
+                    //var resultPost2 = "An error occured - not posted to the catalog";
+                    //document.getElementById("jsonobject").innerHTML = resultPost2;
+                }
+            };
+
+            var newdoc = document.getElementById("jsontext").value;
+            xhre.send(newdoc);
+            myVNFCatalogue(objNameGiven);
+
+        }
+
+        // NSD CATALOGUE FUNCTIONS
+        function myCatalogue(objNameGiven) {
+            nsdCheck = 1;
+		    document.getElementById("jsontext").value = "";	//selcuk
+		    document.getElementById("jsontext").style.display = "none";//selcuk
+            document.getElementById('addnew').style.display = "block";
+            document.getElementById('addnsd').style.display = "none";
+            document.getElementById('addvnfd').style.display = "none";
+            var StringCatalogue = "";
+            StringCatalogue =
+                "<p>NSD List</p><p><button style=\"width:100%\" onClick=\"getFunction()\" type=\"button\">nsdname1</button></p><p><button style=\"width:100%\" onClick=\"getFunction()\" type=\"button\">nsdname2</button></p><p><button style=\"width:100%\" onClick=\"getFunction()\" type=\"button\">nsdname3</button></p><p><button style=\"width:100%\" onClick=\"getFunction()\" type=\"button\">nsdname4</button></p><p><button style=\"width:100%\" onClick=\"getFunction()\" type=\"button\">nsdname5</button></p>";
+            var endingString = "";
+            if (objNameGiven == "0") {
+                document.getElementById("CatalogueIDs").innerHTML = StringCatalogue + endingString;
+            } else {
+                var addedNew = "<button style=\"width:100%\" onClick=\"getFunction()\" type=\"button\">" + objNameGiven + "</button></p>";
+                alert("You have uploaded to the catalogue recently with NSDName:" + objNameGiven);
+                document.getElementById("CatalogueIDs").innerHTML = StringCatalogue + addedNew + endingString;
+
+            }
+
+        }
+
+        function myVNFCatalogue(objNameGiven) {
+            nsdCheck = 2;
+		    document.getElementById("jsontext").value = "";//selcuk
+		    document.getElementById("jsontext").style.display = "none";//selcuk
+            document.getElementById('addnew').style.display = "block";
+            document.getElementById('addnsd').style.display = "none";
+            document.getElementById('addvnfd').style.display = "none";
+            var StringCatalogueR = "";
+            StringCatalogueR =
+                "<p>VNFD List</p><p><button style=\"width:100%\" onClick=\"vnfGetFunction()\" type=\"button\">vnfname1</button></p><p><button style=\"width:100%\" onClick=\"vnfGetFunction()\" type=\"button\">vnfname2</button></p><p><button style=\"width:100%\" onClick=\"vnfGetFunction()\" type=\"button\">vnfname3</button></p><p><button style=\"width:100%\" onClick=\"vnfGetFunction()\" type=\"button\">vnfname4</button></p><p><button style=\"width:100%\" onClick=\"vnfGetFunction()\" type=\"button\">vnfname5</button></p>";
+            var endingString = "";
+            var editorarea = document.getElementById("jsonobject").value;
+            if (objNameGiven == "0") {
+                //alert("You haven't uploaded to the catalogue recently.");
+                document.getElementById("CatalogueIDs").innerHTML = StringCatalogueR + endingString;
+            } else {
+                var addedNew = "<center><button style=\"width:100%\" onClick=\"vnfGetFunction()\" type=\"button\">" + objNameGiven +
+                    "</button></p></center>";
+                alert("You have uploaded to the catalogue recently with name:" + objNameGiven);
+                document.getElementById("CatalogueIDs").innerHTML = StringCatalogueR + addedNew + endingString;
+            }
+        }
+
+        function jsonPrettyHighlightToId(jsonobj, id_to_send_to) {
+            var json = JSON.stringify(jsonobj, undefined, 2);
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            json = json.replace(
+                /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g,
+                function (match) {
+                    var cls = 'color: darkorange;';
+                    if (/^"/.test(match)) {
+                        if (/:$/.test(match)) {
+                            cls = 'color: red;';
+                        } else {
+                            cls = 'color: green;';
+                        }
+                    } else if (/true|false/.test(match)) {
+                        cls = 'color: blue;';
+                    } else if (/null/.test(match)) {
+                        cls = 'color: magenta;';
+                    }
+                    return '<span style="' + cls + '">' + match + '</span>';
+                });
+
+            document.getElementById("jsonobject").innerHTML = json;
+        }
+
+        function hidejsonobjectarea() {
+            document.getElementById('jsonobject').style.display = "none";
+            document.getElementById('jsontext').style.display = "block";
+            document.getElementById('addnew').style.display = "none";
+            if (nsdCheck == 1)
+                document.getElementById('addnsd').style.display = "block";
+
+            else if (nsdCheck == 2)
+                document.getElementById('addvnfd').style.display = "block";
+        }
+
+        function showjsonobjectarea() {
+            document.getElementById('jsonobject').style.display = "block";
+            document.getElementById('jsontext').style.display = "none";
+            document.getElementById('addnew').style.display = "block";
+            document.getElementById('addnsd').style.display = "none";
+            document.getElementById('addvnfd').style.display = "none";
+
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+toscaDefinitionsVersion: tosca_sol001_v0_10
+description: Speech to Text network scenario with two VNFs.
+
+metadata:
+  descriptorId: 59ee1d7c-a643-4eed-9730-2f91e1beXX44
+  vendor: NETAS NEXTWORKS YOURNAME
+  version: '1.1'
+
+topologyTemplate:
+  substitutionMappings:
+    nodeType: tosca.nodes.nfv.NS
+    requirements:
+      virtualLink: [{ cp: VNF1, vl: default }, { cp: VNF2, vl: default }]
+
+  nodeTemplates:
+    vcache_uc3_5gmedia_NS:
+      type: tosca.nodes.nfv.NS
+      properties:
+        descriptorId: 59ee1d7c-a643-4eed-9730-2f91e1beXX44
+        designer: NETAS NEXTWORKS YOURNAME
+        version: '1.1'
+        name: YOURNAME-vcache_uc3_5gmedia_NS
+        invariantId: 59ee1d7c-a643-4eed-9730-2f91e1be1100
+      requirements:
+        virtualLink: [default]
+
+    default:
+      type: tosca.nodes.nfv.NsVirtualLink
+      properties:
+        description: Mgmt VL
+        testAccess: [NONE]
+        vlProfile:
+          maxBitrateRequirements:
+            root: 1000000
+            leaf: 100000
+          minBitrateRequirements:
+            root: 100000
+            leaf: 10000
+        connectivityType:
+          layerProtocols: [IPV4]
+          flowPattern: LINE
+
+    vcache_uc3_5gmedia_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: 59ee1d7c-a643-4eed-9730-2f91e1beXXXX
+        descriptorVersion: '1.1'
+        provider: NETAS NEXTWORKS
+        productName: YOURNAME-vcache_uc3_5gmedia
+        softwareVersion: v1.0
+        productInfoName: vcache_uc3_5gmedia
+        productInfoDescription: vcache_uc3_5gmedia
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+        virtualLink:
+          - default
+
+    originserver_uc3_5gmedia_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: 59ee1d7c-a643-4eed-9730-2f91e1beXX13
+        descriptorVersion: '1.1'
+        provider: NETAS NEXTWORKS
+        productName: YOURNAME-originserver_uc3_5gmedia
+        softwareVersion: v1.0
+        productInfoName: originserver_uc3_5gmedia
+        productInfoDescription: originserver_uc3_5gmedia
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+        virtualLink:
+          - default

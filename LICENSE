@@ -1,0 +1,80 @@
+# [5G-Media SDK All-in-One User Interface](http://www.5gmedia.eu/)
+
+## Features
+
+All-in-one-UI provides user interfaces to following SDK toolset.
+
+- **Editor** let us to initialize the network services that loaded to system.
+- **Private Catalogue** let us to see developers private catalogue.Developers can carry application to Public Catalogue after complete tests and verify their application.
+- **Public Catalogue** let us see and use applications tested and verified.
+- **Service Monitoring** let us monitor openwhisk actions.
+- **Validator** let us validate the Virtual Network Function Descriptors and Network Service Descriptors(vnfd/nsd).
+- **LeanOW CLI** let us control the openwhisk machine by opening commandline interface.
+- **OSM CLI** let us control the OSM machine by opening commandline interface. 
+
+## Prerequisites
+
+For Windows
+
+NodeJS Installation and Verify
+
+1. Download and install Node.js via `https://nodejs.org/en/download/`
+2. Open commandline and type node -v and hit enter. This will show node version.
+
+Docker Installation and Verify
+
+1. Create Docker account for download docker for windows if you dont have .
+2. Download Docker for Windows from `https://store.docker.com/editions/community/docker-ce-desktop-windows`.
+3. Test your installation according to steps from `https://docs.docker.com/docker-for-windows/#test-your-installation`.(only 1st and 2nd steps are enough)
+
+Remote Connect Installation
+
+1.  Download and install PuTTY for remote connection, `https://www.putty.org/`
+2.  Be sure of `putty.exe` file, under "C:/Program Files/PuTTY/putty.exe"
+
+Google Chrome Installation
+
+1.  Download Google Chrome `https://www.google.com/chrome/` and install.
+2.  Be sure of web browser, installed under "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+
+For Mac
+
+MacOS configurations will be added soon.
+
+## Installation Prerequisites
+
+## Installation Alternative A
+
+1.  Download all-in-one-setup directly from link `https://production.eng.it/gitlab/5G-MEDIA/SDK-AIO/raw/master/SDK-Unified-UI/dist/all-in-one%20Setup%201.0.3.exe`
+2.  After that you can double click setup file and select installation path then press Install button.
+3.  it will install application to your computer and it will create shortcut on desktop.
+
+## Installation Alternative B
+
+1.  Clone the repo `git clone https://{username}@production.eng.it/gitlab/5G-MEDIA/SDK-AIO.git`
+2.  Go to your project folder `/SDK-AIO/`
+3.  Run `startServer.sh` script.
+
+
+## Post-installation Configuration 
+
+For Alternative A, configuration will be added in next version.
+- After open the application you will see the `Config Page` on authantication page.
+- When you click it you will see the configuration page.
+- If you will connect with developer account you need to configure developer section.
+- Edit `Editor` for Editor (IP of OSM instance UI e.g. http://10.254.143.148)
+- Edit `Monitoring` for Service Monitoring (IP of Grafana UI e.g. http://10.254.143.148:3000)
+- Edit `Lean` for LeanOW (IP of Lean OW instance e.g. http://10.254.143.148, username/password to access remotely)
+- Edit `OSM` for OSM (IP of OSM instance e.g. http://10.254.143.148, username/password to access remotely)
+
+For Alternative B, `config.json` file will be opened during installation or can be opened manually from `SDK-AIO/SDK-Unified-UI/src`.
+- Edit `editor_url` for Editor (IP of OSM instance UI e.g. http://10.254.143.148)
+- Edit `monitor_dashboard_URL` for Service Monitoring (IP of Grafana UI e.g. http://10.254.143.148:3000)
+- Edit `leanOwCLI` for LeanOW (IP of Lean OW instance e.g. http://10.254.143.148, username/password to access remotely)
+- Edit `osmCLI` for OSM (IP of OSM instance e.g. http://10.254.143.148, username/password to access remotely)
+
+## Starting Application
+
+For Alternative A, Use the shortcut that located in desktop
+
+For Alternative B, Use the `startServer.sh` script that located in the your project folder (also shortcut can be generated manually)

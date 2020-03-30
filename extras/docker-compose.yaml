@@ -1,0 +1,178 @@
+version: '3'
+volumes:
+  ro:
+  ro_db:
+  mongo_db:
+  mon_db:
+  pol_db:
+  osm_packages:
+  keystone_db:
+  prom_db:
+networks:
+  netOSM:
+    external:
+      name: ${OSM_NETWORK:-netosm}
+    #driver: overlay
+    #driver_opts:
+    #  com.docker.network.driver.mtu: "1446"
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper:${ZOOKEEPER_TAG:-latest}
+#    ports:
+#      - "2181:2181"
+    networks:
+      - netOSM
+    healthcheck:
+      test: echo stat | nc localhost 2181
+      interval: 10s
+      timeout: 10s
+      retries: 3
+  kafka:
+    image: wurstmeister/kafka:${KAFKA_TAG:-latest}
+    ports:
+      - "9092"
+    networks:
+      - netOSM
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ADVERTISED_PORT: 9092
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    #depends_on:
+    #  - zookeeper
+  mongo:
+    image: mongo
+#    ports:
+#      - "27017:27017"
+    networks:
+      - netOSM
+    volumes:
+      - mongo_db:/data/db
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_TAG:-latest}
+    hostname: prometheus
+    ports:
+      - "${OSM_PROM_PORTS:-9091:9090}"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prom_db:/prometheus
+    networks:
+      - netOSM
+  keystone-db:
+    image: mariadb:10
+    networks:
+      - netOSM
+    volumes:
+      - keystone_db:/var/lib/mysql
+    env_file:
+      - ./keystone-db.env
+#    ports:
+#      - "3306:3306"
+  keystone:
+#    image: ${DOCKER_USER:-opensourcemano}/keystone:${TAG:-latest}
+    image: docker5gmedia/keystone:v5.0.5
+    networks:
+      - netOSM
+    environment:
+      DB_HOST: keystone-db
+    env_file:
+      - ./keystone.env
+    ports:
+      - "${OSM_KEYSTONE_PORTS:-5000:5000}"
+  nbi:
+#    image: ${DOCKER_USER:-opensourcemano}/nbi:${TAG:-latest}
+    image: docker5gmedia/nbi:v5.0.5
+    networks:
+      - netOSM
+    volumes:
+      - osm_packages:/app/storage
+    environment:
+      OSMNBI_DATABASE_HOST: mongo
+      OSMNBI_MESSAGE_HOST: kafka
+    env_file:
+      - ./nbi.env
+    ports:
+      - "${OSM_NBI_PORTS:-9999:9999}"
+    #depends_on:
+    #  - kafka
+    #  - mongo
+  lcm:
+    image: ${DOCKER_USER:-opensourcemano}/lcm:v5.0.5
+    networks:
+      - netOSM
+    volumes:
+      - osm_packages:/app/storage
+    environment:
+      OSMLCM_RO_HOST: ro
+      OSMLCM_DATABASE_HOST: mongo
+      OSMLCM_MESSAGE_HOST: kafka
+    env_file:
+      - ./lcm.env
+    #depends_on:
+    #  - kafka
+    #  - mongo
+    #  - ro
+  ro-db:
+    image: mysql:5
+    networks:
+      - netOSM
+    volumes:
+      - ro_db:/var/lib/mysql
+    env_file:
+      - ./ro-db.env
+#    ports:
+#      - "3306:3306"
+  ro:
+#    image: ${DOCKER_USER:-opensourcemano}/ro:${TAG:-latest}
+    image: docker5gmedia/ro:git_220e83e_faas_v2.0.3
+    networks:
+      - netOSM
+    environment:
+      RO_DB_HOST: ro-db
+      FAAS_CONF_CONNECT: http://192.168.0.25:5002
+    env_file:
+      - ./ro.env
+    #depends_on:
+    #  - ro-db
+    volumes:
+      - ro:/var/log/osm
+    ports:
+      - "${OSM_RO_PORTS:-9090:9090}"
+  mon:
+    image: ${DOCKER_USER:-opensourcemano}/mon:v5.0.5
+    networks:
+      - netOSM
+    volumes:
+      - mon_db:/app/database
+    environment:
+      BROKER_URI: kafka:9092
+      DATABASE: sqlite:///app/database/mon_sqlite.db
+    env_file:
+      - ./mon.env
+    ports:
+      - "${OSM_MON_PORTS:-8662:8662}"
+    #depends_on:
+    #  - kafka
+  pol:
+    image: ${DOCKER_USER:-opensourcemano}/pol:v5.0.5
+    networks:
+      - netOSM
+    volumes:
+      - pol_db:/app/database
+    environment:
+      OSMPOL_SQL_DATABASE_URI: sqlite:///app/database/policy_module.db
+      BROKER_URI: kafka:9092
+    #depends_on:
+    #  - kafka
+    #  - mon
+  light-ui:
+    image: ${DOCKER_USER:-opensourcemano}/light-ui:v5.0.5
+    networks:
+      - netOSM
+    environment:
+      OSM_SERVER: nbi
+    #depends_on:
+    #  - nbi
+    ports:
+      - "${OSM_UI_PORTS:-8082:80}" 

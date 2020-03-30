@@ -1,0 +1,17 @@
+[
+  { "name": "INTERINNOV", "coordinates": [2.2975,48.7539], "population": 1085800 }, 
+  { "name": "ENG", "coordinates": [12.51133,41.89193], "population": 1085800 },
+  { "name": "IBM", "coordinates": [34.929741000000035,30.987804 ], "population": 1085800 },
+  { "name": "SINGULAR LOGIC", "coordinates": [23.727539,37.983810], "population": 1085800 },
+  { "name": "OTE", "coordinates":  [23.727539,37.983810], "population": 1085800 },
+  { "name": "DEMOKRITOS", "coordinates":  [23.727539,37.983810], "population": 1085800 },
+  { "name": "CERTH", "coordinates":  [ 22.920227,40.736851], "population": 1085800 },
+  { "name": "UCL", "coordinates":  [  -0.118092,51.509865], "population": 1085800 },
+  { "name": "TELEFONICA", "coordinates":  [-3.703790, 40.416775], "population": 1085800 },
+  { "name": "UPM", "coordinates":  [-3.703790, 40.416775], "population": 1085800 },
+  { "name": "ARVE", "coordinates":  [-3.703790, 40.416775], "population": 1085800 },
+  { "name": "IRT", "coordinates":  [ 11.576124,48.137154], "population": 1085800 },
+  { "name": "BITTUBES", "coordinates":  [13.404954,52.520008], "population": 1085800 },
+  { "name": "NETWORKS", "coordinates":  [10.382981,43.724591], "population": 1085800 },
+  { "name": "NETAS", "coordinates":  [28.979530,41.015137], "population": 1085800 }
+]

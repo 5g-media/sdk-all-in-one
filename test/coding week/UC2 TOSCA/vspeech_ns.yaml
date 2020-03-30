@@ -1,0 +1,83 @@
+toscaDefinitionsVersion: tosca_sol001_v0_10
+description: Speech to Text network scenario with two VNFs.
+
+metadata:
+  descriptorId: 59ee1d7c-a643-4eed-9730-2f91e1beabXX
+  vendor: NETAS IRT YOURNAME
+  version: '1.1'
+
+topologyTemplate:
+  substitutionMappings:
+    nodeType: tosca.nodes.nfv.NS
+    requirements:
+      virtualLink: [{ cp: vspeech_VNF, vl: default }, { cp: rtmp-server_VNF, vl: default }]
+
+  nodeTemplates:
+    vspeech_NS:
+      type: tosca.nodes.nfv.NS
+      properties:
+        descriptorId: 59ee1d7c-a643-4eed-9730-2f91e1beabXX
+        designer: NETAS IRT
+        version: '1.1'
+        name: YOURNAME-vspeech_nsd
+        invariantId: 59ee1d7c-a643-4eed-9730-2f91e1beabXX
+      requirements:
+        virtualLink: [default]
+
+    default:
+      type: tosca.nodes.nfv.NsVirtualLink
+      properties:
+        description: Mgmt VL
+        testAccess: [NONE]
+        vlProfile:
+          maxBitrateRequirements:
+            root: 1000000
+            leaf: 100000
+          minBitrateRequirements:
+            root: 100000
+            leaf: 10000
+        connectivityType:
+          layerProtocols: [IPV4]
+          flowPattern: LINE
+
+    vspeech_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: 59ee1d7c-a643-4eed-9730-2f91e1be00XX
+        descriptorVersion: '1.1'
+        provider: NETAS IRT
+        productName: YOURNAME-vspeech
+        softwareVersion: v1.0
+        productInfoName: vspeech
+        productInfoDescription: vspeech
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+        virtualLink:
+          - default
+
+    your_name_rtmp-server_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: 59ee1d7c-a643-4eed-9730-2f91e1be55XX
+        descriptorVersion: '1.1'
+        provider: NETAS IRT
+        productName: YOURNAME_rtmp-server
+        softwareVersion: v1.0
+        productInfoName: rtmp-server
+        productInfoDescription: rtmp-server
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+        virtualLink:
+          - default

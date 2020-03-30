@@ -1,0 +1,85 @@
+toscaDefinitionsVersion: tosca_sol001_v0_10
+description: vCache network scenario with two VNFs
+
+metadata:
+  descriptorId: e9dfab2e-f437-401f-b1e9-7b2c3f105de4
+  vendor: NXW
+  version: "1.1"
+
+topologyTemplate:
+  
+  substitutionMappings:
+    nodeType: tosca.nodes.nfv.NS
+    requirements:
+      virtualLink: [{cp: vcache_VNF, vl: default},{cp: originserver_VNF, vl: default}]
+  
+  nodeTemplates:
+    
+    NS:
+      type: tosca.nodes.nfv.NS
+      properties:
+        descriptorId: e9dfab2e-f437-401f-b1e9-7b2c3f105de4
+        designer: NXW
+        version: "1.1"
+        name: vcache_nsd
+        invariantId: e9dfab2e-f437-401f-b1e9-7b2c3f105de4
+      requirements:
+        virtualLink: [default]
+
+    default:
+      type: tosca.nodes.nfv.NsVirtualLink
+      properties:
+        description: Mgmt VL
+        testAccess: [NONE]
+        vlProfile:
+          maxBitrateRequirements:
+            root: 1000000
+            leaf: 100000
+          minBitrateRequirements:
+            root: 100000
+            leaf: 10000
+        connectivityType:
+          layerProtocols: [IPV4]
+          flowPattern: LINE
+        
+    vcache_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: bf9f6eee-1a3e-445d-ad33-c1506c91bcb1
+        descriptorVersion: "1.1"
+        provider: NXW
+        productName: vcache
+        softwareVersion: v1.0
+        productInfoName: vcache
+        productInfoDescription: vcache
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+          virtualLink:
+          - default
+          
+    originserver_VNF:
+      type: tosca.nodes.nfv.VNF
+      properties:
+        descriptorId: 89c006e9-4c5f-461e-9b23-a17f752e1f8b
+        descriptorVersion: "1.1"
+        provider: NXW
+        productName: originserver
+        softwareVersion: v1.0
+        productInfoName: originserver
+        productInfoDescription: originserver
+        vnfmInfo:
+          - juju
+        localizationLanguages:
+          - ENG
+        defaultLocalizationLanguage: ENG
+        flavourId: simple
+        flavourDescription: Simple deployment flavour
+      requirements:
+          virtualLink:
+          - default
