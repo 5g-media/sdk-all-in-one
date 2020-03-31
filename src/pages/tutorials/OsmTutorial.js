@@ -20,7 +20,10 @@ export default class OsmTutorial extends React.Component {
     const configRes = await getConfig();
     const { config } = configRes;
 
-    const configg = localStorage.getItem('isAdmin') === 'true' ? config.admin : config.developer;
+    const configg =
+      localStorage.getItem('isAdmin') === 'true'
+        ? config.admin
+        : config.developer;
     this.setState({ serviceIp: configg.editor.editor_url });
 
     const res = await getTerminal(this.termElm, 'osm');

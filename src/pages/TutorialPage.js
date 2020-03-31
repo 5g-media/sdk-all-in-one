@@ -17,6 +17,7 @@ import {
 import LeanOWTutorial from './tutorials/LeanOWTutorial';
 import OsmTutorial from './tutorials/OsmTutorial';
 import CatalogueTutorial from './tutorials/CatalogueTutorial';
+import CnoTrainingTutorial from './tutorials/CnoTrainingTutorial';
 import PulicCatalogueTutorial from './tutorials/PulicCatalogueTutorial';
 import EditorTutorial from './tutorials/EditorTutorial';
 import GeneralInfo from './tutorials/GeneralInfo';
@@ -100,12 +101,14 @@ export default class TutorialPage extends React.Component {
       case 5:
         return <MonitoringTutorial />;
       case 6:
-        return <AdvisorTutorial />;
+        return <CnoTrainingTutorial />;
       case 7:
-        return <LeanOWTutorial />;
+        return <AdvisorTutorial />;
       case 8:
-        return <OsmTutorial />;
+        return <LeanOWTutorial />;
       case 9:
+        return <OsmTutorial />;
+      case 10:
         return <PackagingTutorial />;
       default:
         return <GeneralInfo />;
