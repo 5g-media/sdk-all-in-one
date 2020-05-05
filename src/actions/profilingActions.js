@@ -11,7 +11,7 @@ import { findPublicPort } from '../utils/profilingUtils';
 import { vtranscoder, vspeech, vCache } from '../constants/dockerConfig';
 
 export const clearLogs = () => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
       type: actionTypes.CLEAR_LOGS,
       payload: { logs: '', loading: true },
@@ -20,31 +20,31 @@ export const clearLogs = () => {
 };
 
 export const setServiceName = ({ serviceName }) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: actionTypes.SET_SERVICE_NAME, payload: { serviceName } });
   };
 };
 
 export const setPorts = ({ ...portConfig }) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: actionTypes.SET_PORTS, payload: { ...portConfig } });
   };
 };
 
 export const setInvalidStatus = ({ ...status }) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: actionTypes.SET_INVALID_STATUS, payload: { ...status } });
   };
 };
 
 export const setIpAddress = ({ ipAddress }) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: actionTypes.SET_IP_ADDRESS, payload: { ipAddress } });
   };
 };
 
 export const setIpInvalidStatus = ({ ipInvalidStatus }) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({
       type: actionTypes.SET_IP_INVALID_STATUS,
       payload: { ipInvalidStatus },
@@ -53,19 +53,19 @@ export const setIpInvalidStatus = ({ ipInvalidStatus }) => {
 };
 
 export const setProfilingType = ({ ...type }) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: actionTypes.SET_PROFILE_TYPE, payload: { ...type } });
   };
 };
 
 export const setInputChange = ({ ...inputs }) => {
-  return dispatch => {
+  return (dispatch) => {
     dispatch({ type: actionTypes.SET_INPUT_CHANGES, payload: { ...inputs } });
   };
 };
 
 export const startProfiler = ({ state, config }) => {
-  return async dispatch => {
+  return async (dispatch) => {
     const {
       platform,
       ipAddress,
@@ -142,7 +142,7 @@ export const startProfiler = ({ state, config }) => {
 };
 
 export const getServiceConfig = ({ states, config }) => {
-  return async dispatch => {
+  return async (dispatch) => {
     if (states.platform === 'Non-Faas' && states.mode === 'Producer') {
       try {
         const res = await getNonFaasConf({
@@ -193,21 +193,23 @@ export const getServiceConfig = ({ states, config }) => {
           serviceIp: config.validation.extract_service,
           serviceName: states.serviceName,
         });
+        const a = nonFaasRes.data.data[0].Image.includes('vcache') && 0;
+        const b = a === 0 ? 1 : 0;
         dispatch({
           type: actionTypes.SET_NFC_CONF,
           payload: {
             ipAddress: config.validation.extract_service,
-            inputPort: findPublicPort(nonFaasRes.data.data[0].Ports, 8080),
-            outputPort: findPublicPort(nonFaasRes.data.data[1].Ports, 8080),
-            configPort: findPublicPort(nonFaasRes.data.data[1].Ports, 8888),
+            inputPort: findPublicPort(nonFaasRes.data.data[b].Ports, 8080),
+            outputPort: findPublicPort(nonFaasRes.data.data[a].Ports, 8080),
+            configPort: findPublicPort(nonFaasRes.data.data[a].Ports, 8888),
             errMessage: '',
           },
         });
         sendvCacheConfiguration({
           serviceIp: config.validation.extract_service,
-          cacheApiPort: findPublicPort(nonFaasRes.data.data[1].Ports, 8888),
-          originPort: findPublicPort(nonFaasRes.data.data[0].Ports, 8080),
-          cachePort: findPublicPort(nonFaasRes.data.data[1].Ports, 8080),
+          cacheApiPort: findPublicPort(nonFaasRes.data.data[a].Ports, 8888),
+          originPort: findPublicPort(nonFaasRes.data.data[b].Ports, 8080),
+          cachePort: findPublicPort(nonFaasRes.data.data[a].Ports, 8080),
         });
       } catch (error) {
         dispatch({
